@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NetScope - Network Diagnostic Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-one"></div>
+    <div class="bg-orb orb-two"></div>
+
+    <main class="shell">
+      <section class="hero-card panel">
+        <div class="hero-top">
+          <div>
+            <p class="eyebrow">NETWORK INTELLIGENCE</p>
+            <h1>NetScope</h1>
+            <p class="subtitle">Real-time Network Diagnostics</p>
+          </div>
+          <div class="hero-chip">Live Diagnostics</div>
+        </div>
+
+        <div class="input-row">
+          <input
+            id="domainInput"
+            type="text"
+            placeholder="Enter domain (e.g., example.com)"
+            autocomplete="off"
+          />
+          <button id="analyzeBtn">Analyze Domain</button>
+        </div>
+        <p id="statusText" class="status-text"></p>
+      </section>
+
+      <section id="resultCard" class="result-card panel hidden">
+        <div class="result-header">
+          <h2>
+            Diagnostics
+            <button class="info-btn" data-info="diagnostics" aria-label="About diagnostics">
+              i
+            </button>
+          </h2>
+          <div class="result-actions">
+            <button id="downloadBtn" class="download-btn" type="button" disabled>
+              Download Report
+            </button>
+            <span id="verdictBadge" class="verdict-badge">-</span>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="score-wrap metric-card">
+            <div class="metric-head">
+              <span>Connectivity Score</span>
+              <button class="info-btn" data-info="score" aria-label="About connectivity score">
+                i
+              </button>
+            </div>
+            <div id="scoreValue" class="score-value">0</div>
+            <div class="score-label">Weighted health from DNS, ports, HTTP, and latency.</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-head">
+              <span>Resolved IP</span>
+              <button class="info-btn" data-info="ip" aria-label="About resolved ip">i</button>
+            </div>
+            <span id="resolvedIp" class="value">-</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-head">
+              <span>HTTP Status</span>
+              <button class="info-btn" data-info="http" aria-label="About http status">i</button>
+            </div>
+            <span id="httpStatus" class="value">-</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-head">
+              <span>Latency</span>
+              <button class="info-btn" data-info="latency" aria-label="About latency">i</button>
+            </div>
+            <span id="latency" class="value">-</span>
+          </div>
+        </div>
+
+        <div class="ports-block metric-card">
+          <div class="metric-head">
+            <h3>Port Scan</h3>
+            <button class="info-btn" data-info="ports" aria-label="About port scan">i</button>
+          </div>
+          <div id="portsList" class="ports-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <div id="infoModal" class="info-modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="info-dialog">
+        <div class="info-dialog-header">
+          <h4 id="modalTitle">Info</h4>
+          <button id="closeModalBtn" class="close-btn" aria-label="Close">x</button>
+        </div>
+        <p id="modalBody"></p>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
