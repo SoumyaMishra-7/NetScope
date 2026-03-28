@@ -1,5 +1,6 @@
 const LOCAL_API_BASE = "http://127.0.0.1:8000";
-const DEPLOYED_API_BASE = "https://netscope-backend-o22v.onrender.com";
+const DEPLOYED_API_BASE =
+  window.NETSCOPE_API_BASE || "https://netscope-iz2k.onrender.com";
 const isLocalFrontend =
   window.location.protocol === "file:" ||
   window.location.hostname === "127.0.0.1" ||

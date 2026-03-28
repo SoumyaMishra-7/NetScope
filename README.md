@@ -108,7 +108,8 @@ Verdict:
 2. Set root directory to `frontend`.
 3. Deploy as static site.
 4. `frontend/script.js` automatically prefers the local backend in development and falls back to:
-   - `https://netscope-backend-o22v.onrender.com`
+   - `https://netscope-iz2k.onrender.com`
+5. Optional: define `window.NETSCOPE_API_BASE` before loading `script.js` if you want to override the deployed backend without editing the file.
 5. Redeploy frontend if you make further frontend changes.
 
 ## Resume-Ready Description
