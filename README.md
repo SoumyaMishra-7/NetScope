@@ -1,4 +1,4 @@
-# NetScope - Network Diagnostic Dashboard
+ï»¿# NetScope - Network Diagnostic Dashboard
 
 NetScope is a lightweight full-stack web application that performs real-time domain connectivity diagnostics. Users enter a domain name (for example, `example.com`), and the app returns DNS resolution, open/closed ports, HTTP reachability, latency, and a calculated connectivity score.
 
@@ -19,12 +19,12 @@ NetScope is a lightweight full-stack web application that performs real-time dom
 ```text
 NetScope/
 +-- backend/
-¦   +-- main.py
-¦   +-- requirements.txt
+Â¦   +-- main.py
+Â¦   +-- requirements.txt
 +-- frontend/
-¦   +-- index.html
-¦   +-- styles.css
-¦   +-- script.js
+Â¦   +-- index.html
+Â¦   +-- styles.css
+Â¦   +-- script.js
 +-- README.md
 ```
 
@@ -107,8 +107,9 @@ Verdict:
 1. Create a new Vercel project from the same repo.
 2. Set root directory to `frontend`.
 3. Deploy as static site.
-4. Update `frontend/script.js` `API_BASE` to your Render backend URL.
-5. Redeploy frontend.
+4. `frontend/script.js` automatically prefers the local backend in development and falls back to:
+   - `https://netscope-backend-o22v.onrender.com`
+5. Redeploy frontend if you make further frontend changes.
 
 ## Resume-Ready Description
 
@@ -117,3 +118,4 @@ Built **NetScope**, a full-stack network diagnostic dashboard using **FastAPI, P
 ## 30-Second Interview Explanation
 
 "NetScope is a networking-focused full-stack project where users enter a domain and get structured diagnostics instantly. On the backend, I used FastAPI and Python sockets to perform real DNS resolution, multi-port TCP checks, latency measurement, and HTTP reachability. Then I combined those signals into a weighted score and verdict for quick health interpretation. On the frontend, I built a responsive dark dashboard with vanilla JavaScript and dynamic rendering, and prepared deployment using Render and Vercel."
+

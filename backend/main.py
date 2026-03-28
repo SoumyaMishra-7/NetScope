@@ -6,8 +6,12 @@ from typing import Dict, Optional
 from urllib.parse import urlparse
 
 import requests
+import urllib3
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from requests import Response
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # FastAPI app setup
 app = FastAPI(title="NetScope - Network Diagnostic Dashboard", version="1.0.0")
@@ -77,24 +81,56 @@ def measure_latency(ip_address: str, ports: list[int]) -> Optional[float]:
     return None
 
 
+def _build_http_result(
+    success: bool,
+    response: Optional[Response] = None,
+    error: Optional[str] = None,
+    warning: Optional[str] = None,
+) -> Dict[str, Optional[object]]:
+    return {
+        "success": success,
+        "status_code": response.status_code if response else None,
+        "final_url": response.url if response else None,
+        "error": error,
+        "warning": warning,
+    }
+
+
+def _attempt_http_request(method: str, url: str, verify: bool = True) -> Response:
+    return requests.request(method, url, timeout=4, allow_redirects=True, verify=verify)
+
+
 def check_http(domain: str) -> Dict[str, Optional[object]]:
-    """Run an HTTP HEAD request to check web reachability."""
-    url = f"https://{domain}"
-    try:
-        response = requests.head(url, timeout=4, allow_redirects=True)
-        return {
-            "success": True,
-            "status_code": response.status_code,
-            "final_url": response.url,
-            "error": None,
-        }
-    except requests.RequestException as exc:
-        return {
-            "success": False,
-            "status_code": None,
-            "final_url": None,
-            "error": str(exc),
-        }
+    """Run HTTP reachability checks with fallbacks for local TLS issues."""
+    https_url = f"https://{domain}"
+    http_url = f"http://{domain}"
+    tls_warning = (
+        "TLS certificate could not be verified on this machine, "
+        "so the HTTPS check was retried without certificate validation."
+    )
+    last_error: Optional[str] = None
+
+    for method in ("HEAD", "GET"):
+        try:
+            response = _attempt_http_request(method, https_url)
+            return _build_http_result(True, response=response)
+        except requests.exceptions.SSLError:
+            try:
+                response = _attempt_http_request(method, https_url, verify=False)
+                return _build_http_result(True, response=response, warning=tls_warning)
+            except requests.RequestException as exc:
+                last_error = str(exc)
+        except requests.RequestException as exc:
+            last_error = str(exc)
+
+    for method in ("HEAD", "GET"):
+        try:
+            response = _attempt_http_request(method, http_url)
+            return _build_http_result(True, response=response)
+        except requests.RequestException as exc:
+            last_error = str(exc)
+
+    return _build_http_result(False, error=last_error)
 
 
 def compute_score(

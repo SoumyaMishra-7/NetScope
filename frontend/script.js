@@ -1,4 +1,9 @@
-const API_BASE = "http://127.0.0.1:8000";
+const LOCAL_API_BASE = "http://127.0.0.1:8000";
+const DEPLOYED_API_BASE = "https://netscope-backend-o22v.onrender.com";
+const isLocalFrontend =
+  window.location.protocol === "file:" ||
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "localhost";
 
 const domainInput = document.getElementById("domainInput");
 const analyzeBtn = document.getElementById("analyzeBtn");
@@ -163,16 +168,36 @@ async function analyzeDomain() {
   lastReport = null;
 
   try {
-    const response = await fetch(
-      `${API_BASE}/analyze?domain=${encodeURIComponent(domain)}`
-    );
+    const apiCandidates = isLocalFrontend
+      ? [LOCAL_API_BASE, DEPLOYED_API_BASE]
+      : [DEPLOYED_API_BASE, LOCAL_API_BASE];
+    let data = null;
+    let lastError = null;
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || "Request failed");
+    for (const candidate of apiCandidates) {
+      const base = candidate.replace(/\/+$/, "");
+
+      try {
+        const response = await fetch(
+          `${base}/analyze?domain=${encodeURIComponent(domain)}`
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || "Request failed");
+        }
+
+        data = await response.json();
+        break;
+      } catch (error) {
+        lastError = error;
+      }
     }
 
-    const data = await response.json();
+    if (!data) {
+      throw lastError || new Error("Request failed");
+    }
+
     renderResult(data);
     statusText.textContent = "Diagnostics complete.";
   } catch (error) {
