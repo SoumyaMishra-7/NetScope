@@ -1,122 +1,99 @@
-﻿# NetScope - Network Diagnostic Dashboard
+# NetScope X - Real-Time Network Analytics Dashboard
 
-NetScope is a lightweight full-stack web application that performs real-time domain connectivity diagnostics. Users enter a domain name (for example, `example.com`), and the app returns DNS resolution, open/closed ports, HTTP reachability, latency, and a calculated connectivity score.
+NetScope X is a modern cybersecurity SaaS dashboard built with React, Vite, Tailwind CSS, React Router, Axios, Recharts, Framer Motion, Lucide React, FastAPI, and PostgreSQL-ready SQL artifacts. The app focuses on frontend engineering quality: reusable components, protected routes, real-time simulated analytics, upload workflows, searchable packet tables, and responsive admin layouts.
 
 ## Features
 
-- FastAPI backend with clean REST endpoint: `GET /analyze?domain=`
-- Real DNS resolution using `socket.gethostbyname()`
-- TCP port scanning for `80`, `443`, `22`, and `8080`
-- HTTP HEAD check using `requests`
-- Latency measurement using socket timing
-- Connectivity score engine (0-100) with verdict labels
-- Modern responsive dark UI using HTML, CSS, and vanilla JavaScript
-- CORS enabled for frontend-backend integration
-- Beginner-friendly code with clear function separation
+- Premium dark cybersecurity dashboard with responsive sidebar navigation.
+- Protected login flow with fake local authentication.
+- Realtime latency chart updated every 2 seconds.
+- Dashboard cards for active devices, health, packet loss, connections, latency, and threat detection.
+- Recharts line, area, bar, and pie visualizations.
+- Advanced packet table with debounced search, filters, sorting, pagination, and status pills.
+- Dynamic packet route: `/packet/:id`.
+- Drag-and-drop `.txt` and `.json` log upload workflow with progress and analytics summary.
+- Axios API service layer with graceful mock-data fallback.
+- FastAPI endpoints for `/packets`, `/packets/{id}`, `/analytics`, `/devices`, `/logs`, and `/analyze`.
+- PostgreSQL schema, seed data, joins, filters, sorting, and analytics SQL queries.
 
 ## Project Structure
 
 ```text
 NetScope/
-+-- backend/
-¦   +-- main.py
-¦   +-- requirements.txt
-+-- frontend/
-¦   +-- index.html
-¦   +-- styles.css
-¦   +-- script.js
-+-- README.md
+├── backend/
+│   ├── main.py
+│   ├── requirements.txt
+│   └── sql/
+│       ├── schema.sql
+│       ├── seed.sql
+│       └── queries.sql
+├── frontend/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── src/
+│       ├── components/
+│       ├── data/
+│       ├── hooks/
+│       ├── layouts/
+│       ├── pages/
+│       ├── routes/
+│       ├── services/
+│       ├── styles/
+│       └── utils/
+└── README.md
 ```
 
-## Installation
-
-### 1. Clone and open project
+## Run Frontend
 
 ```bash
-git clone <your-repo-url>
-cd NetScope
+cd frontend
+npm install
+npm run dev
 ```
 
-### 2. Setup backend
+Open `http://127.0.0.1:5173`.
+
+## Run Backend
 
 ```bash
 cd backend
 python -m venv .venv
-# Windows
 .venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-
 pip install -r requirements.txt
-```
-
-## Run Locally
-
-### 1. Start backend (FastAPI)
-
-```bash
-cd backend
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-API docs available at `http://127.0.0.1:8000/docs`
+FastAPI docs are available at `http://127.0.0.1:8000/docs`.
 
-### 2. Start frontend
+## Environment
 
-You can serve the `frontend` folder using any static server.
-
-Example with Python:
+The frontend defaults to `http://127.0.0.1:8000` for API calls. Override with:
 
 ```bash
-cd frontend
-python -m http.server 5500
+VITE_API_BASE_URL=https://your-api.example.com
 ```
 
-Open `http://127.0.0.1:5500`
+If the backend is unavailable, the frontend uses realistic mock API responses from `src/data/mockData.js`.
 
-## Connectivity Score Logic
+## PostgreSQL
 
-- DNS success: `+40`
-- Port `443` open: `+25`
-- Port `80` open: `+15`
-- HTTP success: `+20`
-- Low latency bonus: `+10` (if latency < 120 ms)
-- Final score is capped at `100`
+Create and seed a local database:
 
-Verdict:
+```bash
+psql -d netscope_x -f backend/sql/schema.sql
+psql -d netscope_x -f backend/sql/seed.sql
+```
 
-- `75-100`: Healthy
-- `40-74`: Partial / Slow
-- `<40`: Not Reachable
+Useful production-style queries are in `backend/sql/queries.sql`, including packet filtering, latency sorting, protocol analytics, threat summaries, log rollups, and device health joins.
 
-## Deployment
+## Deployment Notes
 
-### Backend on Render
+- Frontend: deploy `frontend` to Vercel, Netlify, or any static host with `npm run build`.
+- Backend: deploy `backend` to Render, Railway, Fly.io, or any ASGI host.
+- Database: use managed PostgreSQL and run files from `backend/sql`.
+- Set `VITE_API_BASE_URL` in the frontend deployment environment.
 
-1. Push repository to GitHub.
-2. On Render, create a **Web Service** from the repo.
-3. Root directory: `backend`
-4. Build command:
-   - `pip install -r requirements.txt`
-5. Start command:
-   - `uvicorn main:app --host 0.0.0.0 --port $PORT`
-6. Deploy and copy backend URL.
+## Resume Summary
 
-### Frontend on Vercel
-
-1. Create a new Vercel project from the same repo.
-2. Set root directory to `frontend`.
-3. Deploy as static site.
-4. `frontend/script.js` automatically prefers the local backend in development and falls back to:
-   - `https://netscope-iz2k.onrender.com`
-5. Optional: define `window.NETSCOPE_API_BASE` before loading `script.js` if you want to override the deployed backend without editing the file.
-5. Redeploy frontend if you make further frontend changes.
-
-## Resume-Ready Description
-
-Built **NetScope**, a full-stack network diagnostic dashboard using **FastAPI, Python socket programming, and vanilla JavaScript**. Implemented DNS lookup, TCP port scanning, HTTP health checks, latency measurement, and a weighted connectivity scoring engine to classify endpoint health in real time.
-
-## 30-Second Interview Explanation
-
-"NetScope is a networking-focused full-stack project where users enter a domain and get structured diagnostics instantly. On the backend, I used FastAPI and Python sockets to perform real DNS resolution, multi-port TCP checks, latency measurement, and HTTP reachability. Then I combined those signals into a weighted score and verdict for quick health interpretation. On the frontend, I built a responsive dark dashboard with vanilla JavaScript and dynamic rendering, and prepared deployment using Render and Vercel."
-
+Built NetScope X, a production-style cybersecurity analytics dashboard using React, Vite, Tailwind CSS, Recharts, Framer Motion, Axios, FastAPI, and PostgreSQL-ready SQL. Implemented protected routes, reusable component architecture, real-time simulated telemetry, advanced packet search/filter workflows, dynamic packet inspection, log upload analytics, mock API fallback, and database schema/query artifacts.
